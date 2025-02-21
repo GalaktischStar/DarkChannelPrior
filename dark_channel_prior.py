@@ -111,7 +111,7 @@ def dehaze(image, window_size=15, omega=0.95, t0=0.1):
     # Recover the image as seen from J(x) being recovered from the hazy image mathematical model.
     dehazed_image = get_recovered_image(image, raw_transmission, atmospheric_light, t0)
 
-    # Our dehzed result!
+    # Our dehazed result!
     return dehazed_image
 
 
