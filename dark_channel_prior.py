@@ -91,19 +91,33 @@ def get_recovered_image(image, transmission, atmospheric_light, t0=0.1):
 
 
 def dehaze(image, window_size=15, omega=0.95, t0=0.1):
+    # Convert the image from type `uint8` to `float64`.  This aims to reduce
+    # any kind of under/overflow errors in calculations.
     image = image.astype(np.float64) / 255
 
+    # Get the dark channel of patches of the image.  These patches are defined by 
+    # the `window_size` variable whose value is `15` meaning that each patch is 
+    # 15x15 pixels in size.
     dark = get_dark_channel(image, window_size)
+
+    # Get the atmospheric light from the image.  Searches for the top brightest pixels
+    # in the image which are usually the sky or very distant things in the background.
     atmospheric_light = get_atmospheric_light(image, dark)
+
+    # Gather how much light is reaching the camera.  Higher t(x) values result in less haze where
+    # as lower t(x) values result in more haze in the image.
     raw_transmission = get_transmission_estimate(image, atmospheric_light, window_size, omega)
 
-    gray_image = cv2.cvtColor((image * 255).astype(np.uint8), cv2.COLOR_BGR2GRAY) / 255
-
+    # Recover the image as seen from J(x) being recovered from the hazy image mathematical model.
     dehazed_image = get_recovered_image(image, raw_transmission, atmospheric_light, t0)
+
+    # Our dehzed result!
     return dehazed_image
 
 
 if __name__ == "__main__":
+    # The entry point of the program.  Loading in the images to be processed.
+
     image = cv2.imread("hazy_image.jpg")
     dehazed = dehaze(image)
     cv2.imwrite("dehazed_image.jpg", dehazed)
