@@ -9,9 +9,9 @@ def get_dark_channel(image, window_size):
     min_channel = np.min(image, axis=2)
 
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (window_size, window_size))
-    get_dark_channel = cv2.erode(min_channel, kernel)
+    dark_channel = cv2.erode(min_channel, kernel)
 
-    return get_dark_channel
+    return dark_channel
 
 
 def get_atmospheric_light(image, get_dark_channel):
@@ -77,7 +77,7 @@ if __name__ == "__main__":
         hazed_image = cv2.imread(image)
         dehazed_image = dehaze(hazed_image)
 
-        cv2.imwrite(f"./Images/Dehazed/{dehazed_image}.jpg", dehazed_image)
+        cv2.imwrite(f"./Images/Dehazed/{image}.jpg", dehazed_image)
         cv2.imshow(f"{image}", dehazed_image)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
