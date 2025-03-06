@@ -30,7 +30,7 @@ def get_atmospheric_light(image, get_dark_channel):
     # The computation looks like this:
     # (1,800,000 * 0.1) = 1800.0
     # What is returned is an integer thanks to the type cast to int.
-    num_brightest = int(max(np.floor(num_pixels * 0.001), 1))
+    num_brightest = int(max(np.floor(num_pixels * 0.2), 1))
 
     # Gets the 2D array from the `get_dark_channel` method which is a grayscale
     # of the original image.  That 2D array is then flattened into a 1D array.
@@ -67,7 +67,7 @@ def get_transmission_estimate(image, atmospheric_light, window_size, omega=0.95)
     # from the image.  This is done to preserve its natural look.
     transmission = 1 - omega * get_dark_channel(normalized_image, window_size)
 
-    return np.clip(transmission, 0.1, 1)
+    return np.clip(transmission, 0.01, 1)
 
 
 def get_recovered_image(image, transmission, atmospheric_light, t0=0.1):
@@ -90,7 +90,7 @@ def get_recovered_image(image, transmission, atmospheric_light, t0=0.1):
     return J.astype(np.uint8)
 
 
-def dehaze(image, window_size=15, omega=0.95, t0=0.1):
+def dehaze(image, window_size=5, omega=0.95, t0=0.1):
     # Convert the image from type `uint8` to `float64`.  This aims to reduce
     # any kind of under/overflow errors in calculations.
     image = image.astype(np.float64) / 255
@@ -118,10 +118,24 @@ def dehaze(image, window_size=15, omega=0.95, t0=0.1):
 if __name__ == "__main__":
     # The entry point of the program.  Loading in the images to be processed.
 
-    image = cv2.imread("hazy_image.jpg")
-    dehazed = dehaze(image)
-    cv2.imwrite("dehazed_image.jpg", dehazed)
-    cv2.imshow("Dehazed Image", dehazed)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    # List of images to be dehazed
+    hazed_images_array = [
+            "./Images/Hazed/gas_station.png",
+            "./Images/Hazed/highway.jpg",
+            "./Images/Hazed/interstate.png",
+            "./Images/Hazed/parking_garage.jpg",
+            "./Images/Hazed/snowy_highway.jpg",
+            "./Images/Hazed/street_light.jpg"
+            ]
+
+    # Iterate over the images in `./Images/Hazed` and present their
+    # dehazed forms one at a time.
+    for image in hazed_images_array:
+        hazed_image = cv2.imread(image)
+        dehazed_image = dehaze(hazed_image)
+
+        cv2.imwrite(f"./Images/Dehazed/{dehazed_image}.jpg", dehazed_image)
+        cv2.imshow(f"{image}", dehazed_image)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
