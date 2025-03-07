@@ -120,22 +120,23 @@ if __name__ == "__main__":
 
     # List of images to be dehazed
     hazed_images_array = [
-            "./Images/Hazed/gas_station.png",
-            "./Images/Hazed/highway.jpg",
-            "./Images/Hazed/interstate.png",
-            "./Images/Hazed/parking_garage.jpg",
-            "./Images/Hazed/snowy_highway.jpg",
-            "./Images/Hazed/street_light.jpg"
-            ]
+                    "gas_station.png",
+                    "highway.jpg",
+                    "interstate.png",
+                    "parking_garage.jpg",
+                    "snowy_highway.jpg",
+                    "street_light.jpg"
+                    ]
 
     # Iterate over the images in `./Images/Hazed` and present their
     # dehazed forms one at a time.
     for image in hazed_images_array:
-        hazed_image = cv2.imread(image)
+        hazed_image = cv2.imread(f"./Images/Hazed/{image}")
         dehazed_image = dehaze(hazed_image)
+        print(image)
 
-        cv2.imwrite(f"./Images/Dehazed/{dehazed_image}.jpg", dehazed_image)
+        cv2.imwrite(f"./Images/Dehazed/{image}", dehazed_image)
         cv2.imshow(f"{image}", dehazed_image)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
-
+    
