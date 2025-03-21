@@ -11,6 +11,10 @@ def get_dark_channel(image, window_size):
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (window_size, window_size))
     dark_channel = cv2.erode(min_channel, kernel)
 
+    cv2.imshow(f"Dark Channel of {image}", dark_channel)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
     return dark_channel
 
 
@@ -49,7 +53,7 @@ def get_recovered_image(image, transmission, atmospheric_light, t0=0.1):
     return J.astype(np.uint8)
 
 
-def dehaze(image, window_size=5, omega=0.95, t0=0.1):
+def dehaze(image, window_size=15, omega=0.95, t0=0.1):
     image = image.astype(np.float64) / 255
 
     dark = get_dark_channel(image, window_size)
@@ -70,13 +74,13 @@ if __name__ == "__main__":
                     "interstate.png",
                     "parking_garage.jpg",
                     "snowy_highway.jpg",
-                    "street_light.jpg"
+                    "street_light.jpg",
+                    "city.jpg"
                     ]
 
     for image in hazed_images_array:
         hazed_image = cv2.imread(f"./Images/Hazed/{image}")
         dehazed_image = dehaze(hazed_image)
-        print(image)
 
         cv2.imwrite(f"./Images/Dehazed/{image}", dehazed_image)
         cv2.imshow(f"{image}", dehazed_image)
